@@ -208,6 +208,10 @@ public final class app/morphe/patches/reddit/customclients/sync/syncforreddit/fi
 	public static final fun getFixGalleriesPatch ()Lapp/morphe/patcher/patch/BytecodePatch;
 }
 
+public final class app/morphe/patches/reddit/customclients/sync/syncforreddit/fix/gallery/FixFailedGalleryImagesPatchKt {
+	public static final fun getFixFailedGalleryImagesPatch ()Lapp/morphe/patcher/patch/BytecodePatch;
+}
+
 public final class app/morphe/patches/reddit/customclients/sync/syncforreddit/fix/redgifs/FixRedgifsApiPatchKt {
 	public static final fun getFixRedgifsApi ()Lapp/morphe/patcher/patch/BytecodePatch;
 }
