@@ -7,14 +7,12 @@ on:
       - main
       - dev
 
+permissions:
+  contents: read
+
 jobs:
   release:
     name: Release
-    permissions:
-      contents: write
-      packages: write
-      id-token: write
-      attestations: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,33 +30,14 @@ jobs:
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew :patches:buildAndroid generatePatchesList clean
+        run: ./gradlew clean :patches:buildAndroid generatePatchesList
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Upload .mpp
+        uses: actions/upload-artifact@v7
         with:
-          node-version: 'lts/*'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          fingerprint: ${{ vars.GPG_FINGERPRINT }}
-
-      - name: Release
-        uses: cycjimmy/semantic-release-action@v5
-        id: release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Attest
-        if: steps.release.outputs.new_release_published == 'true'
-        uses: actions/attest-build-provenance@v3
-        with:
-          subject-name: 'Patcheddit ${{ steps.release.outputs.new_release_git_tag }}'
-          subject-path: patches/build/libs/patches-*.mpp
+          name: artifact
+          path: |
+            patches/build/libs/patches-*.mpp
+            !patches/build/libs/patches-*-sources.mpp
+            !patches/build/libs/patches-*-javadoc.mpp
+          if-no-files-found: error
